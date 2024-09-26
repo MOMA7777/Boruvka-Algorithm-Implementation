@@ -1,0 +1,52 @@
+function BoruvkaMST(Graph G):
+    // Initialize the minimum spanning tree (MST) as empty
+    MST = empty set
+    // Create a list to store the component of each vertex
+    component = array of size |G.V|, initialized to their own indices
+    // Create a variable to track the number of components
+    numComponents = |G.V|
+
+    // While there are more than one component
+    while numComponents > 1:
+        // Create an array to store the minimum edge for each component
+        minEdge = array of size |G.V|, initialized to null
+
+        // For each edge in the graph
+        for each edge (u, v) in G.E:
+            // Find the components of u and v
+            componentU = find(component, u)
+            componentV = find(component, v)
+
+            // If u and v are in different components
+            if componentU != componentV:
+                // Update minEdge for the component if this edge is lighter
+                if minEdge[componentU] is null or weight((u, v)) < weight(minEdge[componentU]):
+                    minEdge[componentU] = (u, v)
+
+                if minEdge[componentV] is null or weight((u, v)) < weight(minEdge[componentV]):
+                    minEdge[componentV] = (u, v)
+
+        // Add the selected edges to the MST and merge the components
+        for each edge in minEdge:
+            if edge is not null:
+                // Add edge to the MST
+                MST.add(edge)
+                // Merge the components of the two vertices of the edge
+                componentU = find(component, edge.u)
+                componentV = find(component, edge.v)
+                union(component, componentU, componentV)
+                // Decrease the number of components
+                numComponents -= 1
+
+    return MST
+
+// Helper function to find the component of a vertex
+function find(component, vertex):
+    if component[vertex] != vertex:
+        component[vertex] = find(component, component[vertex]) // Path compression
+    return component[vertex]
+
+// Helper function to union two components
+function union(component, compU, compV):
+    component[compU] = compV // Connect compU to compV
+
